@@ -1,48 +1,52 @@
 def verif_class_ip(ip_values):
-    if ip_values[0]>0 and ip_values[0]<128 :
+    if 0<=ip_values[0]<127 :
         return "IP de classe A"
-    elif ip_values[0]>=128 and ip_values[0]<192: 
+    elif 128<=ip_values[0]<192: 
         return "IP de classe B" 
-    elif ip_values[0]>=192 and ip_values[0]<224:
+    elif 192<=ip_values[0]<224:
         return "IP de classe C"
-    elif ip_values[0]>=224 and ip_values[0]<240:
+    elif 224<=ip_values[0]<240:
         return "IP de classe D"
-    elif ip_values[0]>=240 and ip_values[0]<256:
+    elif 240<=ip_values[0]<256:
         return "IP de classe E"
     else:     
         return "IP de classe inexistente"     
 
 def verif_mask(mask_value):
-    if mask_value<33 and mask_value>=0:
+    if 0<=mask_value<=32:
         return True
     else:
         return False
  
 def verif_ip_address(ip_values, mask_value_b):
-    for ip in ip_values:
-        if ip>255 or len(ip_values)!=4 or mask_value_b==False:
-            return "Endereço de IP inválido"
-        else:
-            return "Endereço de IP válido"
+    if len(ip_values)!=4 or mask_value_b==False:
+        return "Endereço de IP inválido"
+    else:
+        for ip in ip_values:
+            if ip<0 or ip>255 :
+                return "Endereço de IP inválido"
+            else:
+                continue
+        return "Endereço de IP válido"    
 
 def calculator(mask_value):
     bits_0=2**(32-mask_value)
     hosts=bits_0-2
-    subnets=0
-    
+    #subnets=None
+
     if bits_0>256:
-        for i in range(33):
-            subnets=bits_0//256
-            if subnets<256:
+        for i in range(1,5,1):
+            bits_0//=256
+            if 0<=bits_0<=256:
                 break
 
-        num_sub_net=256//subnets
+        num_sub_net=256//bits_0
 
         if mask_value==32:
             hosts=0
-            return hosts, num_sub_net, subnets
+            return hosts, num_sub_net, bits_0
         else:
-            return hosts, num_sub_net, subnets
+            return hosts, num_sub_net, bits_0
     else:
         num_sub_net=256//bits_0
 
@@ -54,44 +58,60 @@ def calculator(mask_value):
 
 def subnetting(mask_value, ip_values, num_sub_net, sub_nets):
     sub_net_list=[]
-    if mask_value>=0 and mask_value<9:
-        for i in range(0,num_sub_net):
+    if 0<=mask_value<9:
+        for i in range(0,num_sub_net,1):
             num=i*sub_nets
             rede=[num, 0, 0, 0]
+            primeiro_host=[num, 0, 0, 1]
+            ultimo_host=[num, 255, 255, 254]
             broadcast=[num, 255, 255, 255]
             sub_net_list.append({
                 "rede":rede,
+                "primeiro_host":primeiro_host,
+                "ultimo_host":ultimo_host,
                 "broadcast":broadcast })
 
         return sub_net_list
     
-    elif mask_value>=9 and mask_value<17:
+    elif 9<=mask_value<17:
         for i in range(0,num_sub_net,1):
             num=i*sub_nets
             rede=[ip_values[0], num, 0, 0]
+            primeiro_host=[ip_values[0], num, 0, 1]
+            ultimo_host=[ip_values[0], num+sub_nets-1, 255, 254]
             broadcast=[ip_values[0], num+sub_nets-1, 255, 255]
             sub_net_list.append({
                 "rede":rede,
+                "primeiro_host":primeiro_host,
+                "ultimo_host":ultimo_host,
                 "broadcast":broadcast })
         return sub_net_list
     
-    elif mask_value>=17 and mask_value<25:
+    elif 17<=mask_value<25:
         for i in range(0,num_sub_net,1):
             num=i*sub_nets
             rede=[ip_values[0], ip_values[1], num, 0]
+            primeiro_host=[ip_values[0], ip_values[1], num, 1]
+            ultimo_host=[ip_values[0], ip_values[1], num+sub_nets-1, 254]
             broadcast=[ip_values[0], ip_values[1], num+sub_nets-1, 255]
             sub_net_list.append({
                 "rede":rede,
+                "primeiro_host":primeiro_host,
+                "ultimo_host":ultimo_host,
                 "broadcast":broadcast })
         return sub_net_list
     
-    elif mask_value>=25 and mask_value<33:
+    elif 25<=mask_value<33:
         for i in range(0,num_sub_net,1):
             num=i*sub_nets
             rede=[ip_values[0], ip_values[1], ip_values[2], num]
+            primeiro_host=[ip_values[0], ip_values[1], ip_values[2], num+1]
+            ultimo_host=[ip_values[0], ip_values[1], ip_values[2], num+sub_nets-2]
             broadcast=[ip_values[0], ip_values[1], ip_values[2], num+sub_nets-1]
             sub_net_list.append({
                 "rede":rede,
+                "primeiro_host":primeiro_host,
+                "ultimo_host":ultimo_host,
                 "broadcast":broadcast })        
 
         return sub_net_list
@@ -107,7 +127,7 @@ def ip_insert():
                 ip_values.append(num) 
         except ValueError as erro:
                 print(f"Erro detectado: {erro}")
-                #break       
+                     
         else:        
             return ip_values      
            
@@ -123,19 +143,19 @@ def mask_insert():
             return verif_mask(mask_value), mask_value
 
 def main():
-    ip_values=ip_insert()
-    mask_value_b, mask_value=mask_insert()
-    verif=verif_ip_address(ip_values, mask_value_b)
-    print(f" {verif} : {ip_values}/{mask_value} ")
+    octetos=ip_insert()
+    mask_value_b, valor_mascara=mask_insert()
+    verif=verif_ip_address(octetos, mask_value_b)
+    print(f" {verif} : {octetos}/{valor_mascara} ")
     if verif.upper().strip()=="ENDEREÇO DE IP VÁLIDO" :
-        class_ip=verif_class_ip(ip_values)
+        class_ip=verif_class_ip(octetos)
         print(class_ip)
-        hosts, num_sub_net, sub_nets =calculator(mask_value)
+        hosts, numero_sub_redes, sub_nets =calculator(valor_mascara)
         print(f"Número de hosts: {hosts} ")
-        print(f"Número de sub-redes: {num_sub_net} ")
-        sub_net_list=subnetting(mask_value, ip_values, num_sub_net, sub_nets)
-        for net in sub_net_list:
-            print(net)
+        print(f"Número de sub-redes: {numero_sub_redes} ")
+        lista_de_enderecos=subnetting(valor_mascara, octetos, numero_sub_redes, sub_nets)
+        for rede in lista_de_enderecos:
+            print(rede)
     else:
         main()
 
