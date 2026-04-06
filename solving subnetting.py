@@ -32,7 +32,9 @@ def verif_ip_address(ip_values, mask_value_b):
 def calculator(mask_value):
     bits_0=2**(32-mask_value)
     hosts=bits_0-2
-    #subnets=None
+    
+    if mask_value==32:
+            hosts=0
 
     if bits_0>256:
         for i in range(1,5,1):
@@ -42,19 +44,11 @@ def calculator(mask_value):
 
         num_sub_net=256//bits_0
 
-        if mask_value==32:
-            hosts=0
-            return hosts, num_sub_net, bits_0
-        else:
-            return hosts, num_sub_net, bits_0
+        return hosts, num_sub_net, bits_0
     else:
         num_sub_net=256//bits_0
 
-        if mask_value==32:
-            hosts=0
-            return hosts, num_sub_net, bits_0
-        else:
-            return hosts, num_sub_net ,bits_0 
+        return hosts, num_sub_net ,bits_0 
 
 def subnetting(mask_value, ip_values, num_sub_net, sub_nets):
     sub_net_list=[]
