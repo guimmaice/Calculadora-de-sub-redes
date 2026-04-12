@@ -12,7 +12,7 @@ Este projeto é uma ferramenta desenvolvida em Python para automatizar o cálcul
 
 3.Identificação de Classe: Identifica automaticamente se o IP pertence às classes A, B, C, D ou E.
 
-4.Cálculo de Sub-redes: Gera o endereço de Rede e o endereço de Broadcast para cada sub-rede com base na máscara CIDR.
+4.Cálculo de Sub-redes: Gera o endereço de Rede, primeiro e último host válido e o endereço de Broadcast para cada sub-rede com base na máscara CIDR.
 
 5.Modularidade: Código organizado em funções específicas para facilitar a manutenção e leitura.
 
@@ -20,6 +20,7 @@ Este projeto é uma ferramenta desenvolvida em Python para automatizar o cálcul
 🛠️ Tecnologias Utilizadas
 
 1.Python 3
+
 2.Git & GitHub (Controlo de Versão)
 
 
